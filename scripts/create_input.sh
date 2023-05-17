@@ -26,9 +26,11 @@ fi
 # Get number of parties (number of lines of partiesFile)
 partiesNum=`wc -l < $partiesFile`
 
+inputFile="inputFile"
+
 # If inputFile exists, delete it
-if [ -f "inputFile" ]; then
-    rm -f inputFile
+if [ -f $inputFile ]; then
+    rm -i $inputFile
 fi
 
 
@@ -45,5 +47,5 @@ do
     lastName=`cat /dev/urandom | tr -dc "a-z" | fold -w $randLen| head -n 1`
 
     # Write the record in the inputFile
-    echo "$firstName $lastName $randParty" >> inputFile
+    echo "$firstName $lastName $randParty" >> $inputFile
 done
