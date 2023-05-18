@@ -9,10 +9,17 @@ fi
 # Extract args
 partiesFile=$1
 numLines=$2
+inputFile="inputFile"
 
 # Check if the partiesFile exists
 if [ ! -f $partiesFile ]; then
     echo "$partiesFile does not exist."
+    exit 1
+fi
+
+# Check if the user gave a number
+if ! [[ $numLines =~ ^[0-9]+$ ]]; then
+    echo "Second argument must be a positive number."
     exit 1
 fi
 
@@ -25,8 +32,6 @@ fi
 
 # Get number of parties (number of lines of partiesFile)
 partiesNum=`wc -l < $partiesFile`
-
-inputFile="inputFile"
 
 # If inputFile exists, delete it
 if [ -f $inputFile ]; then
