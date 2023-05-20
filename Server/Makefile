@@ -22,7 +22,7 @@ BIN = ./bin
 SRC = ./src
 
 # all of our object files
-OBJS = $(BIN)/poller.o
+OBJS = $(BIN)/poller.o $(BIN)/net.o $(BIN)/util_ser.o $(BIN)/threads.o $(BIN)/socket_buffer.o
 
 # rule to build executable
 $(EXEC): $(OBJS)

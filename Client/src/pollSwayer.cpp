@@ -1,9 +1,17 @@
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 
-using namespace std;
+#include "util_cl.hpp"
 
-int main() {
+int main(int argc, char** argv) {
 
-    cout << "Hello world from pollerSwayer bla" << endl;
+    char* serverName;
+    int portNum;
+    char* inputFile;
+
+    if (get_args(argc, argv, &serverName, &portNum, &inputFile) == -1) {
+        exit(1);
+    }
+
     return 0;
 }
