@@ -3,27 +3,72 @@
 #include <stdlib.h>
 #include <queue>
 #include <signal.h>
+#include <string.h>
+#include <map>
+#include <string>
 
 #include "net.hpp"
 #include "util_ser.hpp"
 #include "threads.hpp"
 #include "socket_buffer.hpp"
 
+#include <iostream>
 using namespace std;
 
 
 SocketBuffer sockbuff;
+map<string, string> votes;
 
 void sig_handle(int signo) {
     printf("Caught signal: %d\n", signo);
+    for (auto it = votes.cbegin(); it != votes.cend(); ++it) {
+        cout << "{" << (*it).first << ": " << (*it).second << "}\n";
+    }
+
     exit(EXIT_SUCCESS);
+
 }
 
-void* hello(void* x) {
-    // while (1) {
-        int sock = socket_buffer_pop(&sockbuff);
-        printf("Got sock %d\n", sock);
-    // }
+void* client_handler(void* x) {
+
+    int sock = socket_buffer_pop(&sockbuff);
+    printf("Accepted connection: %d\n", sock);
+    size_t size = 256;
+    char buff[size];
+
+    bzero(buff, size);
+    strcpy(buff, "SEND NAME PLEASE");
+    send_msg(sock, buff);
+
+    bzero(buff, size);
+    recv_msg(sock, buff);
+    printf("Received name: %s\n", buff);
+    char* name = (char*) malloc(strlen(buff) + 1);
+    strcpy(name, buff);
+
+    bzero(buff, size);
+    strcpy(buff, "SEND VOTE PLEASE\0");
+    send_msg(sock, buff);
+    
+    bzero(buff, size);
+    recv_msg(sock, buff);
+    printf("Received vote: %s\n", buff);
+
+    char* party = (char*) malloc(strlen(buff) + 1);
+    strcpy(party, buff);
+    bzero(buff, size);
+    strcpy(buff, "VOTE FOR \0");
+    strcat(buff, party);
+    strcat(buff, " RECORDED\0");
+    send_msg(sock, buff);
+    
+    printf("last msg = %s\n", buff);
+
+    votes[name] = party;
+    free(name);
+    free(party);
+
+    pthread_detach(pthread_self());
 }
 
 
@@ -48,36 +93,18 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    // printf("connected\n");
-
-    // size_t size = 256;
-    // char* buff = (char*) malloc(size * sizeof(char));
-
-    // while (1) {
-    //     bzero(buff, 256);
-    //     recv_msg(client_sock, buff);
-    //     printf("Received: %s\n", buff);
-    //     bzero(buff, 256);
-    //     printf("Send: ");
-    //     getline(&buff, &size, stdin);
-    //     send_msg(client_sock, buff);
-    // }
-
     socket_buffer_init(&sockbuff);
+    
+    pthread_t threads[numWorkerThreads];
+    create_threads(threads, 3, client_handler);
+    printf("[THREADS INITIALISED]\n");
 
-    pthread_t* threads = (pthread_t*) malloc(numWorkerThreads * sizeof(pthread_t));
-    create_threads(threads, 3, hello);
-
-    int k = 0;
-    while (k < 3) {
+    while (1) {
         int client_sock;
         if ((client_sock = accept_conn(accept_sock)) == -1) {
             exit(1);
-        }
+        }        
         socket_buffer_push(&sockbuff, client_sock);
-        k++;
     }
 
-    destroy_threads(threads, 3);
-    printf("Finished\n");
 }

@@ -9,7 +9,7 @@
 #include "net.hpp"
 
 #define QUEUE_SIZE 5
-#define HEADER_SIZE 4
+#define HEADER_SIZE sizeof(int)
 
 int accept_sock_init(int port) {
 
@@ -67,11 +67,12 @@ int recv_msg(int sock, char* buff) {
 
     read(sock, header_buff, HEADER_SIZE);
     len = *header_buff;
-
     int bytes_recvd = 0;
     while (bytes_recvd < len) {
         bytes_recvd += read(sock, &buff[bytes_recvd], len-bytes_recvd);
     }
+
+    buff[bytes_recvd] = '\0';
 
     return bytes_recvd;
 }
