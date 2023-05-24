@@ -5,18 +5,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "net.hpp"
 
 #define QUEUE_SIZE 5
 #define HEADER_SIZE sizeof(int)
 
+
 int accept_sock_init(int port) {
 
     int sock;
     if ((sock = socket(AF_INET, SOCK_STREAM,0)) == -1) {
-        perror("Failed to create socket");
-        return -1;
+        return SOCKERR;
     }
     
     struct sockaddr_in servaddr;
@@ -28,12 +29,11 @@ int accept_sock_init(int port) {
 
     if (bind(sock, (struct sockaddr*) &servaddr, sizeof(servaddr)) != 0) {
         perror("Failed to bind");
-        return -1;
+        return BINDERR;
     }
 
     if (listen(sock, QUEUE_SIZE) != 0) {
-        perror("listen");
-        return -1;
+        return LISTENERR;
     }
 
     return sock;
@@ -42,7 +42,9 @@ int accept_sock_init(int port) {
 int accept_conn(int accept_sock) {
     int sock;
     if ((sock = accept(accept_sock, NULL, NULL)) == -1) {
-        perror("accept");
+        if (errno == EINTR)
+            return SHUTDOWN;
+
         return -1;
     }
 

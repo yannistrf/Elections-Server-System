@@ -10,7 +10,7 @@ CFLAGS = -I$(INCLUDE) -Wall -g #-Werror
 # linker flags
 LDFLAGS = -g
 
-ARGS = 5050 8 16 poll-log poll-stats
+ARGS = 5050 3 16 poll-log poll-stats
 
 # executable name
 EXEC = poller
@@ -22,7 +22,9 @@ BIN = ./bin
 SRC = ./src
 
 # all of our object files
-OBJS = $(BIN)/poller.o $(BIN)/net.o $(BIN)/util_ser.o $(BIN)/threads.o $(BIN)/socket_buffer.o
+OBJS = 	$(BIN)/poller.o $(BIN)/net.o $(BIN)/util_ser.o \
+		$(BIN)/threads.o $(BIN)/socket_buffer.o $(BIN)/poll.o \
+		$(BIN)/sig_exit.o
 
 # rule to build executable
 $(EXEC): $(OBJS)
