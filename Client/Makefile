@@ -10,7 +10,7 @@ CFLAGS = -I$(INCLUDE) -Wall -g #-Werror
 # linker flags
 LDFLAGS = -g
 
-ARGS = 
+ARGS = localhost 5050 ../scripts/inputFile
 
 # executable name
 EXEC = pollSwayer
@@ -22,7 +22,7 @@ BIN = ./bin
 SRC = ./src
 
 # all of our object files
-OBJS = $(BIN)/pollSwayer.o $(BIN)/util_cl.o
+OBJS = $(BIN)/pollSwayer.o $(BIN)/util_cl.o $(BIN)/net_cl.o
 
 # rule to build executable
 $(EXEC): $(OBJS)
