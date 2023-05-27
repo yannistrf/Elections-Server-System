@@ -22,7 +22,8 @@ BIN = ./bin
 SRC = ./src
 
 # all of our object files
-OBJS = $(BIN)/pollSwayer.o $(BIN)/util_cl.o $(BIN)/net_cl.o
+OBJS =  $(BIN)/pollSwayer.o $(BIN)/utilClient.o $(BIN)/netClient.o \
+		$(BIN)/threadsClient.o
 
 # rule to build executable
 $(EXEC): $(OBJS)

@@ -2,54 +2,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <netdb.h>
-#include <arpa/inet.h>
+// #include <arpa/inet.h>
 #include <pthread.h>
+#include <unistd.h>
 
-#include "util_cl.hpp"
-#include "net_cl.hpp"
-
-typedef struct {
-    char* name;
-    char* lastName;
-    char* party;
-} ThreadInfo;
+#include "utilClient.hpp"
+#include "netClient.hpp"
+#include "threadsClient.hpp"
 
 struct sockaddr_in servaddr;
-
-void* handler(void* ptr) {
-    ThreadInfo* info = (ThreadInfo*) ptr;
-    // printf("%ld: %s %s %s\n", pthread_self(), info->name, info->lastName, info->party);
-
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (connect(sock, (struct sockaddr*) &servaddr, sizeof(servaddr)) == 0)
-        printf("success\n");
-
-    size_t size = 256;
-    char buff[size];
-
-    bzero(buff, size);
-    recv_msg(sock, buff);
-
-    bzero(buff, size);
-    strcpy(buff, info->name);
-    strcat(buff, " ");
-    strcat(buff, info->lastName);
-    send_msg(sock, buff);
-
-    bzero(buff, size);
-    recv_msg(sock, buff);
-
-    bzero(buff, size);
-    send_msg(sock, info->party);
-
-    bzero(buff, size);
-    recv_msg(sock, buff);
-
-    free(info->name);
-    free(info->lastName);
-    free(info->party);
-    free(info);
-}
 
 int main(int argc, char** argv) {
 
@@ -62,10 +23,9 @@ int main(int argc, char** argv) {
     }
 
     struct addrinfo hints, *res;
-    int error;
     memset(&hints, '\0', sizeof(hints));
 
-    if (getaddrinfo(serverName, NULL, &hints, &res) != 0) {
+    if (getaddrinfo(serverName, NULL, NULL, &res) != 0) {
         fprintf(stderr, "Could not resolve server name.\n");
         exit(EXIT_FAILURE);
     }
@@ -77,32 +37,6 @@ int main(int argc, char** argv) {
     servaddr.sin_addr.s_addr = res->ai_addr->sa_data[2];
     servaddr.sin_port = htons(portNum);
 
-    // size_t size = 256;
-    // char* buff = (char*) malloc(size * sizeof(char));
-
-    // bzero(buff, 256);
-    // recv_msg(sock, buff);
-    // printf("Received: %s\n", buff);
-    
-    // printf("Send: ");
-    // bzero(buff, 256);
-    // getline(&buff, &size, stdin);
-    // buff[strlen(buff)-1] = '\0';
-    // send_msg(sock, buff);
-
-    // bzero(buff, 256);
-    // recv_msg(sock, buff);
-    // printf("Received: %s\n", buff);
-    
-    // printf("Send: ");
-    // bzero(buff, 256);
-    // getline(&buff, &size, stdin);
-    // buff[strlen(buff)-1] = '\0';
-    // send_msg(sock, buff);
-
-    // bzero(buff, 256);
-    // recv_msg(sock, buff);
-    // printf("Received: %s\n", buff);
 
     FILE* fp = fopen(inputFile, "r");
     char name[256];
@@ -112,24 +46,11 @@ int main(int argc, char** argv) {
     pthread_t* threads = NULL;
     int thread_count = 0;
     while (fscanf(fp, "%s %s %s\n", name, lastName, party) != EOF) {
-        // printf("%s %s %s\n", name, lastName, party);
-        ThreadInfo* info = (ThreadInfo*) malloc(sizeof(ThreadInfo));
-        info->name = (char*) malloc(strlen(name) + 1);
-        info->lastName = (char*) malloc(strlen(lastName) + 1);
-        info->party = (char*) malloc(strlen(party) + 1);
-        strcpy(info->name, name);
-        strcpy(info->lastName, lastName);
-        strcpy(info->party, party);
-        
-        thread_count++;
-        threads = (pthread_t*) realloc(threads, thread_count * sizeof(pthread_t));
-        pthread_create(&threads[thread_count-1], NULL, handler, (void*) info);
+        ThreadInfo* info = create_info(name, lastName, party, &servaddr);        
+        threads = add_thread(threads, &thread_count, info);
     }
 
-    for (int i = 0; i < thread_count; i++)
-        pthread_join(threads[i], NULL);
-
-    free(threads);
+    destroy_threads(threads, thread_count);
     fclose(fp);
     freeaddrinfo(res);
     return 0;

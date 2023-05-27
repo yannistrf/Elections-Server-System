@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "util_cl.hpp"
+#include "utilClient.hpp"
 
 
 int get_args(   int argc,

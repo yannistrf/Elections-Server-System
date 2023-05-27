@@ -2,10 +2,19 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
 
-#include "net_cl.hpp"
+#include "netClient.hpp"
 
 #define HEADER_SIZE sizeof(int)
+
+int create_conn(struct sockaddr_in* servaddr) {
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (connect(sock, (struct sockaddr*) servaddr, sizeof(*servaddr)) == -1)
+        return -1;
+    
+    return sock;
+}
 
 int send_msg(int sock, char* msg) {
     int len = strlen(msg) + 1;
