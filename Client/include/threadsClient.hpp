@@ -1,8 +1,12 @@
 #pragma once
 
 #include <pthread.h>
-// #include <arpa/inet.h>
 
+/*
+    The struct to get passed to 
+    every thread, holds all the
+    neccessary information
+*/
 typedef struct {
     char* fullName;
     char* party;
@@ -11,6 +15,5 @@ typedef struct {
 
 
 ThreadInfo* create_info(char* name, char* lastName, char* party, struct sockaddr_in* servaddr);
-void destroy_info(ThreadInfo* info);
 pthread_t* add_thread(pthread_t* threads, int* thread_count, ThreadInfo* info);
 void destroy_threads(pthread_t* threads, int thread_count);
