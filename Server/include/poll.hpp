@@ -5,11 +5,18 @@
 #include <map>
 #include <stdio.h>
 
+/*
+    This module is all about storing the results from
+    the election process taking into consideration
+    the synchronization issues among the threads.
+*/
 typedef struct {
-    std::set<std::string> peopleVoted;
-    std::map<std::string, int> voteCounter;
-    int poll_log_fd;
-    FILE* log;
+    
+    std::set<std::string> peopleVoted;          // every voter must be unique so use a set
+    std::map<std::string, int> voteCounter;     // a map that holds the information party-votes
+    pthread_mutex_t lock;                       // a mutex to handle the race conditions for the set and map
+    FILE* log;                                  // the file that we write all of the votes
+
 } Poll;
 
 void poll_init(Poll* poll, char* poll_log);

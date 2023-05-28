@@ -1,15 +1,14 @@
-#include <stdio.h>
 #include <signal.h>
-
-#include "sig_exit.hpp"
 
 extern int online;
 
 void sig_handle(int signo) {
-    printf("\n[SERVER SHUTDOWN]\n");
+    
     online = 0;
 }
 
+// Sets the above signal handler for SIGINT. Returns 0
+// on success, otherwise -1.
 int set_sig_handler() {
 
     struct sigaction sigact = {0};
