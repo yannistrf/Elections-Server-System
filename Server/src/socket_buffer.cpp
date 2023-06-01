@@ -18,7 +18,6 @@ void socket_buffer_accept_ready(SocketBuffer* sb) {
     pthread_mutex_lock(&sb->size_lock);
     // if buffer is full go to sleep
     while (sb->q.size() == sb->max_size) {
-        printf("Master going to sleep\n");
         pthread_cond_wait(&sb->size_cond, &sb->size_lock);
     }
 
@@ -28,13 +27,10 @@ void socket_buffer_accept_ready(SocketBuffer* sb) {
 // Allows main thread to insert a socket in the buffer
 void socket_buffer_push(SocketBuffer* sb, int sock) {
 
-    printf("trying to push %d\n", sock);
     // Critical segment
     pthread_mutex_lock(&sb->access_lock);
 
     sb->q.push(sock);
-    printf("push sock %d\n", sock);
-    // printf("size = %ld\n", sb->q.size());
     // wake up a child thread to handle the connection 
     pthread_cond_signal(&sb->access_cond);
     
@@ -49,7 +45,6 @@ int socket_buffer_pop(SocketBuffer* sb) {
     // if buffer is empty and we are still accepting
     // connections go to sleep
     while (sb->q.empty() && !sb->closed) {
-        printf("going to sleep %ld\n", pthread_self());
         pthread_cond_wait(&sb->access_cond, &sb->access_lock);
     }
 
@@ -62,7 +57,6 @@ int socket_buffer_pop(SocketBuffer* sb) {
 
     sock = sb->q.front();
     sb->q.pop();
-    printf("poped %d %ld\n", sock, pthread_self());
 
     // if the buffer was full, notify the main thread to accept
     // more connections, need to lock to avoid undefined behavior

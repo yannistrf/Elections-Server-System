@@ -1,9 +1,7 @@
 #pragma once
 
+#define BUFFSIZE 1024
 #define SHUTDOWN -2
-#define SOCKERR -1
-#define BINDERR -2
-#define LISTENERR -3
 
 int accept_sock_init(int port);
 int accept_conn(int accept_sock);

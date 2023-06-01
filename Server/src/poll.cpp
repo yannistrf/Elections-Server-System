@@ -58,9 +58,10 @@ void poll_end(Poll* poll, char* poll_stats) {
         }
     } 
     
-    // write the winner of the elections
-    fprintf(stats, "\n*** WINNER ***\n");
-    fprintf(stats, "%s %d\n", first_party.c_str(), votes);
+    printf("\nparticipants: %ld\n", poll->peopleVoted.size());
+    // print the winner of the elections
+    printf("\n*** WINNER ***\n");
+    printf("%s %d\n\n", first_party.c_str(), votes);
     
     fclose(poll->log);
     fclose(stats);

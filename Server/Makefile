@@ -8,9 +8,9 @@ INCLUDE = ./include
 CFLAGS = -I$(INCLUDE) -Wall -g #-Werror
 
 # linker flags
-LDFLAGS = -g
+LDFLAGS = -g -lpthread
 
-ARGS = 5050 3 16 poll-log poll-stats
+ARGS = 5050 4 16 poll-log poll-stats
 
 # executable name
 EXEC = poller
@@ -22,9 +22,8 @@ BIN = ./bin
 SRC = ./src
 
 # all of our object files
-OBJS = 	$(BIN)/poller.o $(BIN)/net.o $(BIN)/util_ser.o \
-		$(BIN)/threads.o $(BIN)/socket_buffer.o $(BIN)/poll.o \
-		$(BIN)/sig_exit.o
+OBJS = 	$(BIN)/poller.o $(BIN)/sig.o $(BIN)/netServer.o \
+		$(BIN)/threadsServer.o $(BIN)/socket_buffer.o $(BIN)/poll.o\
 
 # rule to build executable
 $(EXEC): $(OBJS)
