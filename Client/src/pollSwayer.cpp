@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     sigfillset(&(sigact.sa_mask));
     sigaction(SIGPIPE, &sigact, NULL);
 
-    // Pass server info
+    // Fill server info
     struct sockaddr_in servaddr;
     if (resolve_server_name(serverName, &servaddr) == -1) {
         fprintf(stderr, "Couldn't resolve server name.\n");
@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
 
     pthread_t* threads = NULL;
     int thread_count = 0;
+    // Read from file, line by line (name lastName party)
     // Create a ThreadInfo for each thread and begin its execution
     while (fscanf(fp, "%s %s %s\n", name, lastName, party) != EOF) {
         ThreadInfo* info = create_info(name, lastName, party, &servaddr);        

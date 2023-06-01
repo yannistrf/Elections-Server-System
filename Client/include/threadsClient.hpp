@@ -8,9 +8,11 @@
     neccessary information
 */
 typedef struct {
+
     char* fullName;
     char* party;
     struct sockaddr_in* servaddr;
+
 } ThreadInfo;
 
 

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
 
 #include "threadsClient.hpp"
 #include "netClient.hpp"
@@ -128,6 +127,7 @@ int recv_vote_recorded_msg(int sock, char* party, char* buff) {
     return 0;
 }
 
+/**************************************************************************/
 /**************************************************************************/
 
 // The thread function.

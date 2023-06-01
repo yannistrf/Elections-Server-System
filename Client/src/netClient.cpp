@@ -5,18 +5,17 @@
 
 #include "netClient.hpp"
 
-#define HEADER_SIZE sizeof(int)
+#define HEADER_SIZE sizeof(int)     // first msg is an int indicating the second's msg size
 
 // Given the server's name, fills the ip address in the sockaddr_in struct.
 // Returns -1 in case the server name could not be resolved.
 int resolve_server_name(char* serverName, struct sockaddr_in* servaddr) {
 
-    struct addrinfo* res;
-    if (getaddrinfo(serverName, NULL, NULL, &res) != 0)
+    struct hostent *rem;
+    if ((rem = gethostbyname(serverName)) == NULL)
         return -1;
 
-    servaddr->sin_addr.s_addr = res->ai_addr->sa_data[2];
-    freeaddrinfo(res);
+    memcpy(&servaddr->sin_addr, rem->h_addr, rem->h_length);
 
     return 0;
 }
@@ -31,6 +30,15 @@ int create_conn(struct sockaddr_in* servaddr) {
 
     return sock;
 }
+
+
+/*
+    The protocol we follow for the communication is simple.
+    The first message is an integer (4 bytes) which indicates
+    the size of the actual message. After that we send the actual
+    message. In that way, the recipient will know what to expect.
+*/
+
 
 // Sends a message to the server, returning the number of bytes sent.
 // Returns -1 in case of failure.
@@ -53,16 +61,17 @@ int recv_msg(int sock, char* buff) {
     int len;
     char header_buff[HEADER_SIZE];
 
-    if (read(sock, header_buff, HEADER_SIZE) == -1)
+    int r = read(sock, header_buff, HEADER_SIZE);
+    if (r == -1 || r == 0)
         return -1;
 
     len = *header_buff;
     int bytes_recvd = 0;
     while (bytes_recvd < len) {
-        int b = read(sock, &buff[bytes_recvd], len-bytes_recvd);
-        if (b == -1)
+        r = read(sock, &buff[bytes_recvd], len-bytes_recvd);
+        if (r == -1 || r == 0)
             return -1;
-        bytes_recvd += b;
+        bytes_recvd += r;
     }
 
     // Add null to the end of the string

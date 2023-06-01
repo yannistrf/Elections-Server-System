@@ -8,7 +8,7 @@ INCLUDE = ./include
 CFLAGS = -I$(INCLUDE) -Wall -g #-Werror
 
 # linker flags
-LDFLAGS = -g
+LDFLAGS = -g -lpthread
 
 ARGS = localhost 5050 ../scripts/inputFile
 
