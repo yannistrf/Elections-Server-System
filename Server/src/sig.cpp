@@ -8,8 +8,9 @@ void sig_handle(int signo) {
     online = 0;
 }
 
-// Sets the above signal handler for SIGINT. Returns 0
-// on success, otherwise -1.
+// Sets the above signal handler for SIGINT.
+// Also ignores SIGPIPE in order to handle it later.
+// Returns 0 on success, otherwise -1.
 int set_sig_handler() {
 
     struct sigaction sigact = {0};

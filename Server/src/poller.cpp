@@ -51,6 +51,9 @@ int main(int argc, char** argv) {
         
         // Wait if the buffer is full
         socket_buffer_accept_ready(&sockbuff);
+        // In case SIGINT was received while waiting
+        if (!online) continue;
+
         int client_sock;
         if ((client_sock = accept_conn(accept_sock)) < 0) {
             
