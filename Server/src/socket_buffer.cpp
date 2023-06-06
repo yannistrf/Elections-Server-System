@@ -1,5 +1,4 @@
 #include "socket_buffer.hpp"
-#include <stdio.h>
 
 void socket_buffer_init(SocketBuffer* sb, int max_size) {
 

@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     poll_end(&poll, poll_stats);
 
     printf("Connected: %d\n", count);
-    printf("[SERVER TERMINATED]\n");
+    printf("\n[SERVER TERMINATED]\n");
 
     return 0;
 

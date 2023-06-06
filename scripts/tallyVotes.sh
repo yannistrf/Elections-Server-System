@@ -32,19 +32,3 @@ results=`awk '{print $3, $1, $2}' $inputFile | sort -k 2,3 -s | uniq -f 1 | cut 
 while read num party; do
     echo "$party $num" >> $resultsFile
 done <<< $results
-
-# round=0
-# for token in $results;
-# do
-#     # when round % 2 = 1, token is a number 
-#     round=$((round+1))
-#     rem=$(($round % 2))
-#     if [ $rem -eq 1 ]; then
-#         votes=$token
-#         continue
-#     fi
-
-#     # else it's the name of the party
-#     # so we write the result to our file
-#     echo "$token $votes" >> $resultsFile
-# done

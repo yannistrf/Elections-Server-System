@@ -5,7 +5,7 @@ CC = g++
 INCLUDE = ./include
 
 # compiler flags
-CFLAGS = -I$(INCLUDE) -Wall -g #-Werror
+CFLAGS = -I$(INCLUDE) -Wall -g -Werror
 
 # linker flags
 LDFLAGS = -g -lpthread

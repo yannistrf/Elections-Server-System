@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +51,9 @@ int accept_sock_init(int port) {
 int accept_conn(int accept_sock) {
     
     int sock;
-    if ((sock = accept(accept_sock, NULL, NULL)) == -1) {
+    struct sockaddr_in clientaddr;
+    socklen_t clientlen = sizeof(clientaddr);
+    if ((sock = accept(accept_sock, (struct sockaddr*) &clientaddr, &clientlen)) == -1) {
         // Will be true if accept is interrupted from a signal
         // If so, that means we shutdown the server
         if (errno == EINTR)
@@ -58,6 +61,11 @@ int accept_conn(int accept_sock) {
 
         return -1;
     }
+
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &clientaddr.sin_addr, ip, INET_ADDRSTRLEN);
+    int port = clientaddr.sin_port;
+    printf("[CONNECTED %s:%d]\n", ip, port);
 
     return sock;
 }
